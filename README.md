@@ -13,10 +13,10 @@ used as a api interface for withdrawing and depositing cash in accounts and keep
      To execute the code use the file Banking_System.exe in the repository 
   
   # EXECUTION
-   -> Follow the instructions on the console screen to enter details regarding account
-   -> using deposit and withdraw function one can update balance in his/her account
-   -> the api also displays no of notes available in the atm machine
-   -> it also uses greedy method for increasing/decreasing the number of notes present in atm and giving mnimum no of notes while withdrawing
+  1. Follow the instructions on the console screen to enter details regarding account
+  2. using deposit and withdraw function one can update balance in his/her account
+  3. the api also displays no of notes available in the atm machine
+  4. it also uses greedy method for increasing/decreasing the number of notes present in atm and giving mnimum no of notes while withdrawing
    
    
    
