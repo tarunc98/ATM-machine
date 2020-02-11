@@ -1,0 +1,262 @@
+#include <iostream>
+using namespace std;
+#include<string>
+#include<bits/stdc++.h>
+#include<unordered_map>
+
+struct type{
+  int p;
+  string n;
+  int bal;
+};
+
+struct type1{
+  int rs;
+  int notes;
+};
+
+unordered_map <int, type> m;
+type1 currency[9]={{1,1000},{2,1000},{5,1000},{10,1000},{20,1000},{50,1000},{100,1000},{500,1000},{2000,1000}};
+
+//adding currency in ATM
+void greedy_add(int d){
+     for(int j=8;j>=0&&d>0;){
+        if(currency[j].rs<=d){
+            d-=currency[j].rs;
+            currency[j].notes++;
+        }
+        else
+            j--;
+     }
+      cout<<"Currency matrix:  Rs.      Number of Notes"<<"\n";
+     for(int i=0;i<9;i++)
+       cout<<"                   Rs. "<<currency[i].rs<<"--  "<<currency[i].notes<<"\n";
+
+     cout<<"\n";
+
+}
+
+//decreasing currency in ATM
+bool greedy_sub(int w){
+      int j;
+     for(j=8;j>=0&&w>0;){
+        if(currency[j].rs<=w){
+            w-=currency[j].rs;
+            currency[j].notes--;
+        }
+        else
+            j--;
+     }
+     if(j<0&&w>0){
+        cout<<"ATM does not have cash"<<"\n";
+        return false;
+     }
+      cout<<"Currency matrix:  Rs.      Number of Notes"<<"\n";
+     for(int i=0;i<9;i++)
+       cout<<"                   Rs. "<<currency[i].rs<<"--  "<<currency[i].notes<<"\n";
+
+     cout<<"\n";
+     return true;
+}
+
+
+//function for adding entry
+bool add_new(int no,int pin){
+    int x,y;
+    x= floor(log10(no)+1);
+    y= floor(log10(pin)+1);
+    if(x==8&&y==4){
+         if(m.count(no)>0)
+            return false;
+         else{
+                string name;
+            cout<<"Enter your Name:  ";
+            cin>>name;
+            m[no].p=pin;
+            m[no].n= name;
+            m[no].bal=0;
+            cout<<"Added Successfully"<<"\n";
+            return true;
+         }
+    }
+    else{
+        cout<<"Invalid Card No or Pin"<<" Try Again"<<"\n";
+        return false;
+    }
+}
+
+
+//function for verifying existing entry
+bool check(int no,int pin){
+    int x,y;
+    x= floor(log10(no)+1);
+    y= floor(log10(pin)+1);
+    if(x==8&&y==4){
+         auto ptr= m.find(no);
+         if(ptr!= m.end()){
+            if(ptr->second.p==pin){
+                cout<<"Verification Successful!"<<"\n";
+                return true;}
+             else
+                return false;
+         }
+         else
+            return false;
+    }
+    else{
+        cout<<"Invalid Card No or Pin"<<" Try Again"<<"\n";
+        return false;
+    }
+}
+
+
+
+//func for deposit
+void deposit(int d,int no){
+    m[no].bal+=d;
+    cout<<"Amount added Successfully"<<"\n";
+   greedy_add(d);
+}
+
+
+//func for withdraw
+void withdraw(int w,int no){
+    if(m[no].bal>w){
+        bool ans= greedy_sub(w);  //check if ATM has cash
+       if(ans==true){
+        m[no].bal-=w;
+        cout<<"Please collect cash from below"<<"\n";
+               }
+            }
+    else
+        cout<<"Insufficient Balance"<<"\n";
+
+}
+
+
+//display function
+void display(int no){
+    cout<<"Card no:  "<< no<<"\n";
+    auto pt = m.find(no);
+    cout<<"Name:  "<<pt->second.n<<"\n";
+    cout<<"Balance:  "<<pt->second.bal<<"\n";
+}
+
+
+
+
+int main()
+{
+    int u;
+    cout<<"Welcome to the ATM machine"<<"\n";
+    while(1){
+label:
+    cout<<"Enter the following number:"<<"\n"<<" 1 - NEW USER "<<"\n"<<" 2 - OLD USER"<<"\n"<<" 3 - EXIT"<<"\n"; // user type
+       cin>>u;
+
+    if(u==1){                            //new user
+      int no,pin;
+reenter:
+      cout<<"Enter Card Number (8-digits)"<<"\n";
+      cin>>no;
+      cout<<"Set Pin for ATM card (4-digits)"<<"\n";
+      cin>>pin;
+      bool result=  add_new(no, pin);    //checking database and length of entries and adding to database
+        if(result){
+                int t;
+             cout<<"Enter:"<<"\n"<<"1 - deposit money"<<"\n"<<"2 - withdraw money"<<"\n"<<"3 - EXIT"<<"\n";
+X:
+             cin>>t;
+               if(t==1){
+                    int d;
+                  cout<<"How much money do you want to deposit?"<<"\n";  //deposit money
+                  cin>>d;
+                  deposit(d,no);
+                  cout<<"Updated details"<<"\n";
+                  display(no);
+               }
+               else if(t==2){
+                    int w;
+                 lab:
+                      cout<<"how much money do you want to withdraw?"<<"\n";  //withdraw money<20000
+                  cin>>w;
+                  if(w<20000){
+                     withdraw(w,no);
+                     cout<<"Updated details"<<"\n";
+                     display(no);}
+                  else{
+                     cout<<"Cannot withdraw more than Rs.20000!! enter again"<<"\n";
+                     goto lab;
+                   }
+               }
+               else if(t==3) cout<<"Exit successfully"<<"\n";
+               else{
+                cout<<"Enter valid number (1 - deposit or 2 - withdraw or 3 - EXIT)"<<"\n";
+                goto X;
+               }
+        }
+
+        else{
+            cout<<"ERROR :(("<<"\n";
+            goto reenter;
+        }
+      }
+    else if(u==2){                // old user
+            int no,pin;
+existing:
+        cout<<"Enter Card Number"<<"\n";
+        cin>>no;
+        cout<<"enter ATM pin"<<"\n";
+        cin>>pin;
+        bool b= check(no,pin);     // check database for pin enter in it
+        if(b){
+            cout<<"Account details:"<<"\n";
+            display(no);
+            int t;
+             cout<<"Enter:"<<"\n"<<"1 - deposit money"<<"\n"<<"2 - withdraw money";
+Y:
+             cin>>t;
+               if(t==1){         //deposit
+                    int d;
+                  cout<<"How much money do you want to deposit?";
+                  cin>>d;
+                  deposit(d,no);
+                  cout<<"Updated details"<<"\n";
+                  display(no);
+               }
+               else if(t==2){     // withdraw
+                    int w;
+L:
+                      cout<<"how much money do you want to withdraw?";
+                  cin>>w;
+                  if(w<20000){
+                     withdraw(w,no);
+                     cout<<"Updated details"<<"\n";
+                     display(no);}
+                  else{
+                     cout<<"Cannot withdraw more than Rs.20000!! enter again";
+                     goto L;
+                   }
+               }
+               else{
+                cout<<"Enter valid number (1 - deposit or 2 - withdraw)";
+                goto Y;
+               }
+        }
+        else{     // if wrong pin/no is entered
+                char s;
+            cout<<"Invalid Credentials! "<<"\n";
+            cout<<"Do you want to enter details again?"<<"\n"<< "Enter Y-- Yes"<<"\n"<<"    N-- No";
+            cin>>s;
+            if(s=='Y')
+              goto existing;
+        }
+    }
+    else if(u==3) break;
+    else{                                    //else condition foe old/new user
+        cout<<"invalid input"<<"\n";
+        goto label;
+      }
+    }
+    return 0;
+}
